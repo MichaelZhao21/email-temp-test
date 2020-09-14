@@ -1,0 +1,16 @@
+case messageType
+    when "upcoming_activity"
+        - var title = "Upcoming Activity"
+    when "waitlist"
+        - var title = `Waitlist (Position ${waitlistPos})`
+    when "upcoming_registration"
+        - var title = "Upcoming Registration" 
+    when "promoted_from_waitlist"
+        - var title = "Promoted from Waitlist" 
+    when "upcoming_shifts"
+        - var title = "Upcoming Shift(s)"
+    when "registration_confirmed"
+        - var title = "Registration Confirmed"
+    default
+        - var title = "INVALID ACTIVITY"
+= `TamsHub: ${title} for ${eventName}`

@@ -1,0 +1,97 @@
+case messageType
+    when "upcoming_activity"
+        - var title = "UPCOMING ACTIVITY"
+        - var message = "You have shown interest in the following activity, which begins in "
+        - var extra = " "
+        - var shiftCount = 0
+    when "waitlist"
+        - var title = `WAITLIST (POSITION ${waitlistPos})`
+        - var message = "Unfortunately, spots have ran out for this event. You have been put on the waitlist, and will be automatically promoted if a spot becomes available."
+        - var shiftCount = 1
+        - var pending = true
+    when "upcoming_registration"
+        - var title = "UPCOMING REGISTRATION"
+        - var message = "Registration for the following event begins in "
+        - var extra = "Remember to login to your TAMSHub Account to register."
+        - var shiftCount = 0
+    when "promoted_from_waitlist"
+        - var title = "PROMOTED FROM WAITLIST"
+        - var message = "Congratulations! You have been registered for the following event. To set a reminder for when your first shift begins, visit your account page."
+        - var shiftCount = 1
+    when "upcoming_shifts"
+        - var title = "UPCOMING SHIFT(S)"
+        - var message = "Your first shift for the following event begins in "
+        - var extra = "Please don’t forget to show up!"
+        - var shiftCount = 2
+    when "registration_confirmed"
+        - var title = "REGISTRATION CONFIRMED"
+        - var message = "Congratulations! You have been registered for the following event. To set a reminder for when your first shift begins, visit your account page."
+        - var shiftCount = 2
+    default
+        - var title = "INVALID ACTIVITY"
+        - var message = ":("
+        - var shiftCount = 0
+- var upcomingEvent = eventType === 'upcoming_activity' || eventType === 'upcoming_registration'
+
+doctype transitional
+html(xmlns="http://www.w3.org/1999/xhtml")
+    head
+        meta(http-equiv="Content-Type", content="text/html;charset=UTF-8")
+        title TamsHub Notification
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    body(style="margin: 0; padding: 0")
+        table(border="0" cellpadding="0" cellspacing="0" width="100%")
+            tr: td(style="padding: 20px 0 30px 0;"): table(align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; border: 1px solid #cccccc;")
+                tr: td(align="center" bgcolor="#539699" style="padding: 5px 0 10px 0")
+                    img(alt="TamsHub" width="200" height="50" style="display: block; object-fit: contain;" src="https://api.michaelzhao.xyz/images/birthday-cake-rainbow.png")/
+                tr: td(align="center" bgcolor="#ffffff" style="padding: 10px 40px 10px 40px")
+                    table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                        tr: td(align="center" style="padding: 0 0 10px 0; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 40px;") #{title}
+                        tr: td(align="center"): table(border="0" cellpadding="0" cellspacing="0" width="20%"): tr: td(align="center" bgcolor="#000000" style="padding: 0.5px 0 0 0")
+                        tr: td(style="padding: 20px 0 20px 0; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 16px") 
+                            b Dear #{username},
+                                br
+                                | #{message} 
+                                if upcomingEvent || eventType === 'upcoming_shifts'
+                                    span(style="color: #92C46D") #{notificationOffset}.
+                                    if extra
+                                        br
+                                        | #{extra}
+                        tr: td(align="center" style="padding: 10px 0 10px 0")
+                            table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                                tr
+                                    td(width="150") 
+                                        img(src=`${imageUrl}` alt="club image" width="150" height="150" style="display: block; object-fit: contain;")
+                                    td(style="font-size: 0; line-height: 0;" width="20") &nbsp;
+                                    td(width="350")
+                                        table(border="0" cellpadding="0" cellspacing="0" width="100%")
+                                            if startTime && upcomingEvent
+                                                tr: td(style="color: #FF8A00; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 10px")
+                                                    if messageType === "upcoming_registration"
+                                                        | - Registration Opens #{startTime}
+                                                    else
+                                                        | - Activity Begins #{startTime}
+                                            tr: td(style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 20px"): b #{eventName}
+                                            if eventContact && eventContactUrl && !upcomingEvent
+                                                tr: td(style="padding: 3px 0 0 0; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 13px;") Contact: 
+                                                    a(href=`${eventContactUrl}` style="text-decoration: none; color: #2D8CFF") #{eventContact}
+                                            tr: td(style="padding: 10px 0 0 0;"): table(border="0" cellpadding="0" cellspacing="0" width="30%")
+                                                tr: td(align="center" bgcolor="#92C46D" style="border-radius: 5px; padding: 4px 4px 4px 4px; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 13px;")
+                                                    b: a(href=`${eventUrl}` style="text-decoration: none; color: #ffffff") View Event
+                                            if zoomUrl && eventType === 'upcoming_activity'
+                                                tr: td(style="padding: 10px 0 0 0;"): table(border="0" cellpadding="0" cellspacing="0" width="30%")
+                                                    tr: td(align="center" bgcolor="#2D8CFF" style="border-radius: 5px; padding: 4px 4px 4px 4px; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 13px;")
+                                                        b: a(href=`${zoomUrl}` style="text-decoration: none; color: #ffffff") Zoom Link
+                        if !upcomingEvent && shiftCount !== 0
+                            tr: td(style="font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 16px") Your 
+                                if pending
+                                    | pending 
+                                | shift
+                                if shiftCount > 1
+                                    | (s)
+                                | :
+                                ul(style="margin: 0 0 0 0;")
+                                    each item in shifts
+                                        li= item
+                tr: td(align="center" style="color: #777777; padding: 10px 0 10px 0; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; font-size: 12px") To unsubscribe from these emails, visit your 
+                    a(href=`${unsubscribeUrl}` style="color: #777777") account settings.
